@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34004.107
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitariCupBackend.Server", "NitariCupBackend.Server\NitariCupBackend.Server.csproj", "{824A6786-6DAA-46DF-9E22-6426C89E90C0}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NitariCupBackend.Library", "NitariCupBackend.Library\NitariCupBackend.Library.fsproj", "{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{824A6786-6DAA-46DF-9E22-6426C89E90C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{824A6786-6DAA-46DF-9E22-6426C89E90C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{824A6786-6DAA-46DF-9E22-6426C89E90C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{824A6786-6DAA-46DF-9E22-6426C89E90C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01B1D0C8-0F3C-40BE-8047-CD43DDF34214}
+	EndGlobalSection
+EndGlobal
