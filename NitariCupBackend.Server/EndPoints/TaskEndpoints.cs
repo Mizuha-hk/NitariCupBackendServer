@@ -163,11 +163,16 @@ public static class TaskEndpoints
         .WithName("UpdateTask")
         .WithOpenApi();
 
-        group.MapPost("/", async (TaskPostReqModel req, NitariCupBackendServerContext db) =>
+        group.MapPost("/", async Task<Results<Ok, BadRequest<string>>> (TaskPostReqModel req, NitariCupBackendServerContext db) =>
         {
             var Id = Guid.NewGuid();
             var profile = await LineAuth.GetProfile(req.AccessToken);
             Task.WaitAll();
+
+            if(profile.displayName == "Unknown")
+            {
+                return TypedResults.BadRequest("AccessToken is invalid");
+            }
 
             var taskScheme = new TaskScheme
             {
