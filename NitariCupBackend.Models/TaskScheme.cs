@@ -17,7 +17,6 @@ namespace NitariCupBackend.Models
         public DateTime startDate { get; set; }
         public DateTime limitDate { get; set; }
         public DateTime createdAt { get; set; }
-        [AllowNull]
         public bool isDone { get; set; } = false;
         [AllowNull]
         public DateTime? DoneDate { get; set; }

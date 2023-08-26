@@ -1,0 +1,21 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+###
+POST https://localhost:7275/api/TaskScheme
+Content-Type: application/json
+
+{
+    "Id":"b8d99ce1-bbfe-470b-a1dc-36cb647ed1b6",
+    "userId":"sampleuserId1",
+    "title":"sampleTitle1",
+    "description":"sampleDescription1",
+    "startDate":"2023-08-26T02:56:35.934Z",
+    "endDate":"2023-08-26T02:56:35.934Z",
+    "createdAt":"2023-08-26T02:56:35.934Z",
+    "isDone":false,
+    "DoneDate":null,
+    "score":null
+}
+###
+
+###

@@ -1,4 +1,10 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using NitariCupBackend.Server.Data;
+using NitariCupBackend.Server.EndPoints;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<NitariCupBackendServerContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DB_CONNECTION_STRING") ?? throw new InvalidOperationException("Connection string 'NitariCupBackendServerContext' not found.")));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,6 +41,8 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+app.MapTaskSchemeEndpoints();
 
 app.Run();
 

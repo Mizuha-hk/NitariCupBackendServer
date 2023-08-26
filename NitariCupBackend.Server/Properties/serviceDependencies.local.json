@@ -9,6 +9,10 @@
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/nitari-cup-database-server/databases/NitariCupDatabase",
       "type": "mssql.azure",
       "connectionId": "ConnectionStrings:DB_CONNECTION_STRING"
+    },
+    "mssql2": {
+      "type": "mssql.local",
+      "connectionId": "ConnectionStrings:NitariCupBackendServerContext"
     }
   }
 }
