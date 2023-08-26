@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="LineAuthModel\LineAuthProfile.fs" />
+    <Compile Include="LineAuth.fs" />
     <Compile Include="ScoreCalculater.fs" />
   </ItemGroup>
 
