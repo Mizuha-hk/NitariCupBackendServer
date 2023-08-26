@@ -12,6 +12,18 @@ public static class TaskEndpoints
     {
         var group = routes.MapGroup("/api/TaskScheme").WithTags(nameof(TaskScheme));
 
+        group.MapGet("/Notification", async Task<Results<Ok<List<TaskScheme>>, NotFound>> (NitariCupBackendServerContext db) =>
+        {
+            return await db.TaskScheme.AsNoTracking()
+                .OrderBy(model => model.startDate)
+                .Where(model => model.isDone == false)
+                .Where(model => (model.startDate - DateTime.Now).Hours < 1 && (model.startDate - DateTime.Now).Hours > 0)
+                .ToListAsync()
+                is List<TaskScheme> models
+                    ? TypedResults.Ok(models)
+                    : TypedResults.NotFound();
+        });
+
         group.MapGet("/Id={id}", async Task<Results<Ok<TaskScheme>, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
         {
             return await db.TaskScheme.AsNoTracking()
