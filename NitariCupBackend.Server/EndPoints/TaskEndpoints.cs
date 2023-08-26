@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using NitariCupBackend.Models;
 using NitariCupBackend.Server.Data;
+using NitariCupBackend.Library;
+
 namespace NitariCupBackend.Server.EndPoints;
 
 public static class TaskEndpoints
@@ -10,14 +12,7 @@ public static class TaskEndpoints
     {
         var group = routes.MapGroup("/api/TaskScheme").WithTags(nameof(TaskScheme));
 
-        group.MapGet("/", async (NitariCupBackendServerContext db) =>
-        {
-            return await db.TaskScheme.ToListAsync();
-        })
-        .WithName("GetAllTaskSchemes")
-        .WithOpenApi();
-
-        group.MapGet("/{id}", async Task<Results<Ok<TaskScheme>, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
+        group.MapGet("/Id={id}", async Task<Results<Ok<TaskScheme>, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
         {
             return await db.TaskScheme.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -28,38 +23,160 @@ public static class TaskEndpoints
         .WithName("GetTaskSchemeById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, TaskScheme taskScheme, NitariCupBackendServerContext db) =>
+        group.MapGet("/Done/Id={id}", async Task<Results<Ok<TaskResponseModel>, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
+        {
+            var task = await db.TaskScheme.AsNoTracking()
+                .FirstOrDefaultAsync(model => model.Id == id);
+            if(task == null)
+            {
+                return TypedResults.NotFound();
+            }
+            var now = DateTime.Now;
+            var score = (float)ScoreCalculater.ScoreCalc(task.startDate, task.limitDate, now);
+
+            var affected = await db.TaskScheme
+                .Where(model => model.Id == id)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(model => model.isDone, true)
+                    .SetProperty(model => model.DoneDate, now)
+                    .SetProperty(model => model.score, score)
+                );
+
+            return affected == 1 ? TypedResults.Ok(new TaskResponseModel()
+            {
+                Id = task.Id,
+                title = task.title,
+                description = task.description,
+                startDate = task.startDate,
+                limitDate = task.limitDate,
+                createdAt = task.createdAt,
+                isDone = true,
+                DoneDate = now,
+                score = score
+            }) 
+            : TypedResults.NotFound();
+        })
+        .WithName("DoneTask")
+        .WithOpenApi();
+
+        group.MapGet("/NotDone/AT={AccessToken},index={index}", async Task<Results<Ok<List<TaskResponseModel>>, NotFound>> (string AccessToken, int index, NitariCupBackendServerContext db) =>
+        {
+            var profile = await LineAuth.GetProfile(AccessToken);
+            Task.WaitAll();
+
+            var tasks = await db.TaskScheme.AsNoTracking()
+                .OrderBy(model => model.startDate)
+                .Where(model => model.userId == profile.userId)
+                .Where(model => model.isDone == false)
+                .Skip(index * 10)
+                .Take(10)
+                .ToListAsync();
+
+            var response = new List<TaskResponseModel>();
+
+            foreach (var itme in tasks)
+            {
+                response.Add(new TaskResponseModel
+                {
+                    Id = itme.Id,
+                    title = itme.title,
+                    description = itme.description,
+                    startDate = itme.startDate,
+                    limitDate = itme.limitDate,
+                    createdAt = itme.createdAt,
+                    isDone = itme.isDone,
+                    DoneDate = itme.DoneDate,
+                    score = itme.score
+                });
+            }
+
+            return response.Count() > 0
+                ? TypedResults.Ok(response)
+                : TypedResults.NotFound();
+        })
+        .WithName("GetUncompleted10Tasks")
+        .WithOpenApi();
+
+        group.MapGet("/IsDone/AT={AccessToken},index={index}", async Task<Results<Ok<List<TaskResponseModel>>, NotFound>> (string AccessToken, int index, NitariCupBackendServerContext db) =>
+        {
+            var profile = await LineAuth.GetProfile(AccessToken);
+            Task.WaitAll();
+
+            var tasks = await db.TaskScheme.AsNoTracking()
+                .OrderBy(model => model.startDate)
+                .Where(model => model.userId == profile.userId)
+                .Where(model => model.isDone == true)
+                .Skip(index * 10)
+                .Take(10)
+                .ToListAsync();
+
+            var response = new List<TaskResponseModel>();
+
+            foreach(var itme in tasks)
+            {
+                response.Add(new TaskResponseModel
+                {
+                    Id = itme.Id,
+                    title = itme.title,
+                    description = itme.description,
+                    startDate = itme.startDate,
+                    limitDate = itme.limitDate,
+                    createdAt = itme.createdAt,
+                    isDone = itme.isDone,
+                    DoneDate = itme.DoneDate,
+                    score = itme.score
+                });
+            }
+
+            return response.Count() > 0
+                ? TypedResults.Ok(response)
+                : TypedResults.NotFound();
+        })
+        .WithName("GetCompleted10Tasks")
+        .WithOpenApi();
+
+        group.MapPut("/Id={id}", async Task<Results<Ok, NotFound>> (Guid id, TaskPutReqModel req, NitariCupBackendServerContext db) =>
         {
             var affected = await db.TaskScheme
                 .Where(model => model.Id == id)
                 .ExecuteUpdateAsync(setters => setters
-                  .SetProperty(m => m.Id, taskScheme.Id)
-                  .SetProperty(m => m.userId, taskScheme.userId)
-                  .SetProperty(m => m.title, taskScheme.title)
-                  .SetProperty(m => m.description, taskScheme.description)
-                  .SetProperty(m => m.startDate, taskScheme.startDate)
-                  .SetProperty(m => m.limitDate, taskScheme.limitDate)
-                  .SetProperty(m => m.createdAt, taskScheme.createdAt)
-                  .SetProperty(m => m.isDone, taskScheme.isDone)
-                  .SetProperty(m => m.DoneDate, taskScheme.DoneDate)
-                  .SetProperty(m => m.score, taskScheme.score)
+                  .SetProperty(m => m.title, req.title)
+                  .SetProperty(m => m.description, req.description)
+                  .SetProperty(m => m.startDate, req.startDate)
+                  .SetProperty(m => m.limitDate, req.limitDate)
                 );
 
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
-        .WithName("UpdateTaskScheme")
+        .WithName("UpdateTask")
         .WithOpenApi();
 
-        group.MapPost("/", async (TaskScheme taskScheme, NitariCupBackendServerContext db) =>
+        group.MapPost("/", async (TaskPostReqModel req, NitariCupBackendServerContext db) =>
         {
+            var Id = Guid.NewGuid();
+            var profile = await LineAuth.GetProfile(req.AccessToken);
+            Task.WaitAll();
+
+            var taskScheme = new TaskScheme
+            {
+                Id = Id,
+                userId = profile.userId,
+                title = req.title,
+                description = req.description,
+                startDate = req.StartDate,
+                limitDate = req.LimitDate,
+                createdAt = req.CreatedAt,
+                isDone = false,
+            };
+
             db.TaskScheme.Add(taskScheme);
             await db.SaveChangesAsync();
-            return TypedResults.Created($"/api/TaskScheme/{taskScheme.Id}",taskScheme);
+            return TypedResults.Ok();
         })
-        .WithName("CreateTaskScheme")
+        .WithName("CreateTask")
         .WithOpenApi();
 
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
+        group.MapDelete("/Id={id}", async Task<Results<Ok, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
         {
             var affected = await db.TaskScheme
                 .Where(model => model.Id == id)
@@ -67,7 +184,7 @@ public static class TaskEndpoints
 
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
-        .WithName("DeleteTaskScheme")
+        .WithName("DeleteTask")
         .WithOpenApi();
     }
 }
