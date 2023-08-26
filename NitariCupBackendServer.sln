@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitariCupBackend.Server", "
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NitariCupBackend.Library", "NitariCupBackend.Library\NitariCupBackend.Library.fsproj", "{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitariCupBackend.Models", "NitariCupBackend.Models\NitariCupBackend.Models.csproj", "{5664DF6D-8208-4C57-9190-FE86FB86E2F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C231AF2E-6599-45C1-A94F-B7BDAB8492EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5664DF6D-8208-4C57-9190-FE86FB86E2F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5664DF6D-8208-4C57-9190-FE86FB86E2F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5664DF6D-8208-4C57-9190-FE86FB86E2F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5664DF6D-8208-4C57-9190-FE86FB86E2F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
