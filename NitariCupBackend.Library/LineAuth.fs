@@ -17,7 +17,7 @@ module LineAuth =
 
             let! response = client.GetAsync(LineProfileUrl) |> Async.AwaitTask
 
-            if response.IsSuccessStatusCode then
+            if not response.IsSuccessStatusCode then
                 let profile = { displayName = "Unknown"; userId = "Unknown"; pictureUrl = "Unknown"; statusMessage = "Unknown" }
                 return profile
             else
