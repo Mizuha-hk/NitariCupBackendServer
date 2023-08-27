@@ -22,7 +22,9 @@ public static class TaskEndpoints
                 is List<TaskScheme> models
                     ? TypedResults.Ok(models)
                     : TypedResults.NotFound();
-        });
+        })
+        .WithName("GetRecentTasks")
+        .WithOpenApi();
 
         group.MapGet("/Id={id}", async Task<Results<Ok<TaskScheme>, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
         {
@@ -167,7 +169,6 @@ public static class TaskEndpoints
         {
             var Id = Guid.NewGuid();
             var profile = await LineAuth.GetProfile(req.AccessToken);
-            Task.WaitAll();
 
             if(profile.displayName == "Unknown")
             {
@@ -191,6 +192,29 @@ public static class TaskEndpoints
             return TypedResults.Ok();
         })
         .WithName("CreateTask")
+        .WithOpenApi();
+
+        group.MapPost("/Sample", async Task<Results<Ok, BadRequest<string>>> (TaskPostReqModel req, NitariCupBackendServerContext db) =>
+        {
+            var Id = Guid.NewGuid();
+
+            var taskScheme = new TaskScheme
+            {
+                Id = Id,
+                userId = req.AccessToken,
+                title = req.title,
+                description = req.description,
+                startDate = req.StartDate,
+                limitDate = req.LimitDate,
+                createdAt = req.CreatedAt,
+                isDone = false,
+            };
+
+            db.TaskScheme.Add(taskScheme);
+            await db.SaveChangesAsync();
+            return TypedResults.Ok();
+        })
+        .WithName("sampleCreate")
         .WithOpenApi();
 
         group.MapDelete("/Id={id}", async Task<Results<Ok, NotFound>> (Guid id, NitariCupBackendServerContext db) =>
