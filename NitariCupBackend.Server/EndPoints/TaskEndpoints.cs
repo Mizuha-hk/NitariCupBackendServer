@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NitariCupBackend.Models;
 using NitariCupBackend.Server.Data;
 using NitariCupBackend.Library;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace NitariCupBackend.Server.EndPoints;
 
@@ -14,14 +15,18 @@ public static class TaskEndpoints
 
         group.MapGet("/Notification", async Task<Results<Ok<List<TaskScheme>>, NotFound>> (NitariCupBackendServerContext db) =>
         {
-            return await db.TaskScheme.AsNoTracking()
+            var now = DateTime.Now;
+            var tasks = await db.TaskScheme
                 .OrderBy(model => model.startDate)
                 .Where(model => model.isDone == false)
-                .Where(model => (model.startDate - DateTime.Now).Hours < 1 && (model.startDate - DateTime.Now).Hours > 0)
-                .ToListAsync()
-                is List<TaskScheme> models
-                    ? TypedResults.Ok(models)
-                    : TypedResults.NotFound();
+                .ToListAsync();
+            var response = tasks
+                .Where(model => (model.startDate - now).Hours < 2 && (model.startDate - now).Hours > 0).ToList();
+
+            return response == null
+                ? TypedResults.NotFound()
+                : TypedResults.Ok(response);
+
         })
         .WithName("GetRecentTasks")
         .WithOpenApi();
