@@ -22,7 +22,7 @@ public static class TaskEndpoints
                 .ToListAsync();        
 
             var response = tasks
-                .Where(model => (model.startDate - now).Hours < 2 && (model.startDate - now).Hours > 0)
+                .Where(model => (model.startDate - now).Hours <= 2 && (model.startDate - now).Hours >= 0)
                 .ToList();
 
             return response == null
