@@ -20,8 +20,11 @@ public static class TaskEndpoints
                 .OrderBy(model => model.startDate)
                 .Where(model => model.isDone == false)
                 .ToListAsync();
+            Task.WaitAll();
+
             var response = tasks
-                .Where(model => (model.startDate - now).Hours < 2 && (model.startDate - now).Hours > 0).ToList();
+                .Where(model => (model.startDate - now).Hours < 2 && (model.startDate - now).Hours > 0)
+                .ToList();
 
             return response == null
                 ? TypedResults.NotFound()
