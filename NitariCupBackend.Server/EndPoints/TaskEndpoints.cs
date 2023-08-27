@@ -15,7 +15,7 @@ public static class TaskEndpoints
 
         group.MapGet("/Notification", async Task<Results<Ok<List<TaskScheme>>, NotFound>> (NitariCupBackendServerContext db) =>
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow.AddHours(9);
             var tasks = await db.TaskScheme
                 .OrderBy(model => model.startDate)
                 .Where(model => model.isDone == false)
@@ -52,7 +52,7 @@ public static class TaskEndpoints
             {
                 return TypedResults.NotFound();
             }
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow.AddHours(9);
             var score = (float)ScoreCalculater.ScoreCalc(task.startDate, task.limitDate, now);
 
             var affected = await db.TaskScheme
